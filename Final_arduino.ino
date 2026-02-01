@@ -8,30 +8,50 @@ MPU6050 imu;
 
  
 
-// change this number later to tune sensitivity
+// tune this later
 
-int SLOUCH_THRESHOLD = 15000;
+int SLOUCH_THRESHOLD = 14500;
 
  
 
 void setup() {
+
   Serial.begin(9600);
+
   Wire.begin();
+
+ 
 
   imu.initialize();
 
-  // Wake up the MPU6050
+ 
+
+  // Wake up MPU6050
+
   Wire.beginTransmission(0x68);
+
   Wire.write(0x6B);
+
   Wire.write(0);
+
   Wire.endTransmission(true);
+
+ 
 
   Serial.println(imu.testConnection() ? "MPU OK" : "MPU FAIL");
 
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
+ 
+
+  pinMode(3, OUTPUT); // RED
+
+  pinMode(4, OUTPUT); // GREEN
+
+  pinMode(5, OUTPUT); // BLUE (unused for now)
+
+  pinMode(6, OUTPUT); // VIBRATION
+
 }
+
  
 
 void loop() {
@@ -40,40 +60,35 @@ void loop() {
 
   imu.getAcceleration(&ax, &ay, &az);
 
-  // Serial.print("AY: ");
-  // Serial.println(ay);
-
-  
  
 
-  // ay = forward/back tilt
+ 
 
   if (ay < 14500) {
 
-    // GOOD posture → GREEN
+    //  SLOUCHING
 
-    digitalWrite(4, LOW);
+    digitalWrite(4, LOW);   // GREEN OFF
 
-    digitalWrite(3, HIGH);
+    digitalWrite(3, HIGH);  // RED ON
+
+    digitalWrite(6, HIGH);  // VIBRATION ON
 
     Serial.println("SLOUCH");
-  } else if (ay < 15500) {
-    
-    analogWrite(4, 75);
 
-    digitalWrite(3, HIGH);
-    Serial.println("GOOD");
-
+ 
 
   } else {
 
-    // SLOUCHING → RED
+    //  GOOD POSTURE
 
-    digitalWrite(4, HIGH);
+    digitalWrite(4, HIGH);  // GREEN ON
 
-    digitalWrite(3, LOW);
+    digitalWrite(3, LOW);   // RED OFF
+
+    digitalWrite(6, LOW);   // VIBRATION OFF
+
     Serial.println("GOOD");
-
 
   }
 
