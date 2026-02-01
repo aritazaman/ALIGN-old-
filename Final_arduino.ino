@@ -27,6 +27,10 @@ void setup() {
   Wire.endTransmission(true);
 
   Serial.println(imu.testConnection() ? "MPU OK" : "MPU FAIL");
+
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
 }
  
 
@@ -46,6 +50,8 @@ void loop() {
 
   if (ay < 14500) {
 
+    // GOOD posture → GREEN
+
     digitalWrite(4, LOW);
 
     digitalWrite(3, HIGH);
@@ -60,6 +66,8 @@ void loop() {
 
 
   } else {
+
+    // SLOUCHING → RED
 
     digitalWrite(4, HIGH);
 
